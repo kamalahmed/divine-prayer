@@ -1,10 +1,14 @@
 // Import the verses array
 import verses from "./verses.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const verseElement = document.getElementById("verse");
   const verseEnElement = document.getElementById("verse-en");
   const changeWallpaperButton = document.getElementById("change-wallpaper");
   const wallpaperSelector = document.getElementById("wallpaper-selector");
+  const clockElement = document.getElementById("clock");
+  const dateElement = document.getElementById("date");
+
   const count = 19;
   const wallpapers = [];
   for (let i = 0; i < count; i++) {
@@ -56,4 +60,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Display a verse when the new tab is opened
   displayVerse();
+
+  // Update clock and date
+  function updateClockAndDate() {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12; // The hour '0' should be '12'
+    const timeString = `${hours}:${minutes} ${ampm}`;
+    clockElement.textContent = timeString;
+
+    const options = { weekday: "long", month: "long", day: "numeric" };
+    const dateString = now.toLocaleDateString(undefined, options);
+    dateElement.textContent = dateString;
+  }
+
+  setInterval(updateClockAndDate, 1000);
+  updateClockAndDate(); // Initial call to display the clock immediately
 });

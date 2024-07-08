@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Random Quran Verse",
+    "name": "Divine Prayer",
     "version": "1.0",
-    "description": "Shows a random verse from the Quran on each new tab",
+    "description": "Each time you open a new tab then it shows an uthentic prayers from the Quran and the Authentic Hadith of the Prophet Muhammad Peace Be Upon Him.",
     "chrome_url_overrides": {
       "newtab": "newtab.html"
     },

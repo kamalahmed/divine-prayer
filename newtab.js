@@ -2,6 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const verseElement = document.getElementById("verse");
   const changeWallpaperButton = document.getElementById("change-wallpaper");
 
+  const count = 19;
+  const wallpapers = [];
+  for (let i = 0; i < count; i++) {
+    const wallpaperURL = `wallpapers/wallpaper${i + 1}.jpg`;
+    wallpapers.push(wallpaperURL);
+  }
+
   const verses = [
     "Indeed, this Qur'an guides to that which is most suitable...",
     "And We have certainly made the Qur'an easy for remembrance...",
@@ -13,16 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return verses[randomIndex];
   }
 
+  function getRandomWallpaper() {
+    const randomIndex = Math.floor(Math.random() * wallpapers.length);
+    return wallpapers[randomIndex];
+  }
+
   function displayVerse() {
     verseElement.textContent = getRandomVerse();
   }
 
   function changeWallpaper() {
-    const imageUrl = prompt("Enter the URL of the new wallpaper:");
-    if (imageUrl) {
-      document.body.style.backgroundImage = `url(${imageUrl})`;
-      localStorage.setItem("wallpaper", imageUrl);
-    }
+    const randomWallpaper = getRandomWallpaper();
+    document.body.style.backgroundImage = `url(${randomWallpaper})`;
+    localStorage.setItem("wallpaper", randomWallpaper);
   }
 
   changeWallpaperButton.addEventListener("click", changeWallpaper);
@@ -31,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedWallpaper) {
     document.body.style.backgroundImage = `url(${savedWallpaper})`;
   } else {
-    document.body.style.backgroundImage = "url(background.jpg)";
+    changeWallpaper(); // Set a random wallpaper on the first load
   }
 
   // Display a verse when the new tab is opened

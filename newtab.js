@@ -8,17 +8,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const wallpaperSelector = document.getElementById("wallpaper-selector");
   const clockElement = document.getElementById("clock");
   const dateElement = document.getElementById("date");
-
+  const savedWallpaper = localStorage.getItem("wallpaper");
+  let verseIndex = localStorage.getItem("verseIndex")
+    ? parseInt(localStorage.getItem("verseIndex"))
+    : 0;
   const count = 19;
+
   const wallpapers = [];
   for (let i = 0; i < count; i++) {
     const wallpaperURL = `wallpapers/wallpaper${i + 1}.jpg`;
     wallpapers.push(wallpaperURL);
   }
 
-  function getRandomVerse() {
-    const randomIndex = Math.floor(Math.random() * verses.length);
-    return verses[randomIndex];
+  function getNextVerse() {
+    const verse = verses[verseIndex];
+    verseIndex = (verseIndex + 1) % verses.length; // Loop to the beginning
+    localStorage.setItem("verseIndex", verseIndex); // Store the current index
+    return verse;
   }
 
   function getRandomWallpaper() {
@@ -27,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function displayVerse() {
-    let verse = getRandomVerse();
+    const verse = getNextVerse();
     verseElement.textContent = verse.ar;
     verseEnElement.textContent = verse.en;
   }
@@ -42,25 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.backgroundImage = `url(${url})`;
     localStorage.setItem("wallpaper", url);
   }
-
-  changeWallpaperButton.addEventListener("click", changeWallpaper);
-
-  wallpaperSelector.addEventListener("change", () => {
-    const selectedWallpaper = wallpaperSelector.value;
-    setWallpaper(selectedWallpaper);
-  });
-
-  const savedWallpaper = localStorage.getItem("wallpaper");
-  if (savedWallpaper) {
-    setWallpaper(savedWallpaper);
-    wallpaperSelector.value = savedWallpaper;
-  } else {
-    changeWallpaper(); // Set a random wallpaper on the first load
-  }
-
-  // Display a verse when the new tab is opened
-  displayVerse();
-
   // Update clock and date
   function updateClockAndDate() {
     const now = new Date();
@@ -77,6 +64,23 @@ document.addEventListener("DOMContentLoaded", () => {
     dateElement.textContent = dateString;
   }
 
+  // change wallpaper
+  changeWallpaperButton.addEventListener("click", changeWallpaper);
+  wallpaperSelector.addEventListener("change", () => {
+    const selectedWallpaper = wallpaperSelector.value;
+    setWallpaper(selectedWallpaper);
+  });
+
+  if (savedWallpaper) {
+    setWallpaper(savedWallpaper);
+    wallpaperSelector.value = savedWallpaper;
+  } else {
+    changeWallpaper(); // Set a random wallpaper on the first load
+  }
+
+  // Display a verse when the new tab is opened
+  displayVerse();
+  // Display Date and Time
   setInterval(updateClockAndDate, 1000);
   updateClockAndDate(); // Initial call to display the clock immediately
 });

@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  #content {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  #verse {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  #change-wallpaper {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  

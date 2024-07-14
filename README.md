@@ -21,7 +21,8 @@ This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih
    ```bash
    git clone git@github.com:kamalahmed/divine-prayer.git
    ```
-   Or you can download the zip by clicking on the Green button on the repository page.
+   Or you can download the zip by clicking on the Green button on the repository page or from the relaese page. 
+   Here is direct download link: https://github.com/kamalahmed/divine-prayer/archive/refs/tags/v1.0.0.zip
 2. Open Chrome and navigate to `chrome://extensions/`.
 3. Enable "Developer mode" using the toggle switch in the top right.
 4. Click "Load unpacked" and select the folder where you cloned the repository. Remember, the folder should be unzipped. 

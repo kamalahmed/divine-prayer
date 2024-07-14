@@ -64,7 +64,7 @@ This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih
 
 
 ## A TIPS:
-if you want to use custom wallpapers then you can do so. Just replace any or all images inside the wallpapers folder and YOU MUST KEEP THE NAME SAME for example wallpaper1.jpg wallpaper2.jpg etc in order for them to work. You can use the number of images available there. Adding more images will not work as the app shows random images between 1-20.
+if you want to use custom wallpapers then you can do so. Just replace any or all images inside the wallpapers folder and YOU MUST KEEP THE NAME SAME for example wallpaper1.jpg wallpaper2.jpg etc in order for them to work. You can use upto 19 wallpapers. Adding more images will not work as the app shows random images between 1-19.
 
 ## License
 This project is licensed under the MIT License

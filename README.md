@@ -1,6 +1,5 @@
-
-![Screenshot](screenshot.png)
 # Divine Prayer Chrome Extension
+[Download it from Google Chrome WebStore](https://chromewebstore.google.com/detail/divine-prayer/deghiahojmjleifepimmipmbakakpfag)
 ## Description
 This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih Hadith on each new tab. It also features a clock and date display at the bottom left corner. The user can change the wallpaper by clicking a button or selecting from predefined wallpapers.
 

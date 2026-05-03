@@ -1,7 +1,7 @@
 # Divine Prayer Chrome Extension
 [Download it from Google Chrome WebStore](https://chromewebstore.google.com/detail/divine-prayer/deghiahojmjleifepimmipmbakakpfag)
 ## Description
-This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih Hadith on each new tab. It also features a clock and date display at the bottom left corner. The user can change the wallpaper by clicking a button or selecting from predefined wallpapers.
+This Chrome extension cycles through a curated collection of duas/prayers/zikr from the Quran and Sahih Hadith — one per new tab — so you read through them sequentially over time. It also features a clock and date display at the bottom left corner, and you can change the wallpaper by clicking a button or selecting from a predefined list.
 
 
 ## How to use this extension - Watch Demo.
@@ -10,10 +10,13 @@ This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih
 
 
 ## Features
-- Displays a random dua/prayer/zikr from the Quran and Sahih Hadith with English translation.
-- Shows the current time with AM/PM and the current date.
-- Allows changing the wallpaper with a random wallpaper button.
-- Provides a dropdown to select from predefined wallpapers.
+- Displays a dua/prayer/zikr from the Quran and Sahih Hadith with English translation, cycling sequentially across new tabs.
+- Navigate verses with prev/next buttons or the ←/→ arrow keys.
+- Shows the current time and date; toggle between 12h (AM/PM) and 24h format.
+- Random wallpaper button plus dropdown for picking from the predefined set.
+- Settings (verse position, wallpaper, time format) persist across sessions via `chrome.storage`.
+- Self-hosted fonts and a strict Content Security Policy — no external network requests.
+- Accessible: keyboard navigation, focus rings, semantic markup, `lang="ar"` for screen readers.
 
 ## Installation
 1. Clone the repository to your local machine:
@@ -36,22 +39,24 @@ This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih
   /wallpapers
     wallpaper1.jpg
     wallpaper2.jpg
-    wallpaper3.jpg
     ...
-  /background.jpg
-  /screenshot.png
+  /fonts
+    scheherazade-arabic.woff2
+    scheherazade-latin.woff2
   /newtab.html
   /newtab.js
   /styles.css
   /verses.js
   /manifest.json
   /README.md
+  /Privacy.md
 ```
 
 ## Usage
-- Open a new tab to see a random prayer/dua/zikr from the Quran along with the current time and date.
-- Click the "Random Wallpaper" button to change the wallpaper to a random one.
-- Use the dropdown menu to select a specific wallpaper from the predefined set.
+- Open a new tab to see the next prayer/dua/zikr in the sequence, along with the current time and date.
+- Click the prev/next buttons (or press ←/→) to navigate verses manually.
+- Click "24h" / "12h" to toggle the clock format.
+- Click "Random Wallpaper" to swap to a random wallpaper, or pick a specific one from the dropdown.
 
 ## Contributing
 1. Fork the repository.
@@ -62,8 +67,9 @@ This Chrome extension displays a random dua/prayer/zikr from the Quran and Sahih
 
 
 
-## A TIPS:
-if you want to use custom wallpapers then you can do so. Just replace any or all images inside the wallpapers folder and YOU MUST KEEP THE NAME SAME for example wallpaper1.jpg wallpaper2.jpg etc in order for them to work. You can use upto 19 wallpapers. Adding more images will not work as the app shows random images between 1-19.
+## Custom wallpapers
+- Replace any image in `wallpapers/` to use your own — file names must stay as `wallpaper1.jpg`, `wallpaper2.jpg`, etc.
+- To use more or fewer than the default 19 wallpapers, change the `WALLPAPER_COUNT` constant at the top of `newtab.js` and add/remove the matching `wallpaperN.jpg` files. The dropdown is generated from this constant, so it updates automatically.
 
 ## License
 This project is licensed under the MIT License

@@ -6,31 +6,126 @@
     <title>New Tab</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-controls-visible="true">
     <main>
       <figure id="content">
         <blockquote id="verse" lang="ar" dir="rtl" aria-live="polite">…</blockquote>
         <p id="verse-en" aria-live="polite">Loading…</p>
         <figcaption id="verse-source" hidden></figcaption>
         <nav id="verse-nav" aria-label="Verse navigation">
-          <button id="prev-verse" type="button" aria-label="Previous verse" title="Previous verse (←)">‹</button>
+          <button id="prev-verse" type="button" class="icon-btn" aria-label="Previous verse" title="Previous verse (←)">‹</button>
+          <button id="favorite-verse" type="button" class="icon-btn" aria-pressed="false" aria-label="Favorite this verse" title="Favorite (F)">
+            <span class="fav-icon" aria-hidden="true">☆</span>
+          </button>
           <span id="verse-counter" aria-live="off"></span>
-          <button id="next-verse" type="button" aria-label="Next verse" title="Next verse (→)">›</button>
+          <button id="copy-verse" type="button" class="icon-btn" aria-label="Copy verse to clipboard" title="Copy (C)">
+            <span aria-hidden="true">⧉</span>
+          </button>
+          <button id="next-verse" type="button" class="icon-btn" aria-label="Next verse" title="Next verse (→)">›</button>
         </nav>
       </figure>
     </main>
 
-    <div id="controls">
-      <button id="time-format" type="button" aria-pressed="false" title="Toggle 12h / 24h time">24h</button>
-      <button id="change-wallpaper" type="button">Random Wallpaper</button>
-      <label class="visually-hidden" for="wallpaper-selector">Select wallpaper</label>
-      <select id="wallpaper-selector"></select>
-    </div>
-
     <div id="clock-container">
       <div id="clock" aria-live="off"></div>
       <div id="date" aria-live="off"></div>
+      <div id="hijri-date" aria-live="off"></div>
+      <div id="prayer-widget" hidden>
+        <span id="next-prayer-name"></span>
+        <span id="next-prayer-time"></span>
+        <span id="next-prayer-countdown"></span>
+      </div>
     </div>
+
+    <button id="open-settings" type="button" class="icon-btn settings-toggle" aria-haspopup="dialog" aria-expanded="false" aria-label="Open settings" title="Settings (,)">
+      <span aria-hidden="true">⚙</span>
+    </button>
+
+    <aside id="settings-panel" role="dialog" aria-modal="false" aria-labelledby="settings-title" aria-hidden="true">
+      <header>
+        <h2 id="settings-title">Settings</h2>
+        <button id="close-settings" type="button" class="icon-btn" aria-label="Close settings">✕</button>
+      </header>
+
+      <section>
+        <h3>Display</h3>
+        <label class="row">
+          <span>Time format</span>
+          <button id="time-format" type="button" aria-pressed="false">24h</button>
+        </label>
+        <label class="row" for="wallpaper-selector">
+          <span>Wallpaper</span>
+          <select id="wallpaper-selector"></select>
+        </label>
+        <label class="row">
+          <span>&nbsp;</span>
+          <button id="change-wallpaper" type="button">Random Wallpaper</button>
+        </label>
+      </section>
+
+      <section>
+        <h3>Verses</h3>
+        <label class="row">
+          <span>Show favorites only</span>
+          <input id="favorites-only" type="checkbox" />
+        </label>
+        <p class="meta"><span id="favorites-count">0</span> favorited</p>
+      </section>
+
+      <section>
+        <h3>Prayer times</h3>
+        <label class="row">
+          <span>Enable</span>
+          <input id="prayer-enable" type="checkbox" />
+        </label>
+        <div id="prayer-config" hidden>
+          <label class="row">
+            <span>Latitude</span>
+            <input id="prayer-lat" type="number" step="0.0001" min="-90" max="90" placeholder="e.g. 21.4225" />
+          </label>
+          <label class="row">
+            <span>Longitude</span>
+            <input id="prayer-lon" type="number" step="0.0001" min="-180" max="180" placeholder="e.g. 39.8262" />
+          </label>
+          <label class="row">
+            <span>Method</span>
+            <select id="prayer-method">
+              <option value="MuslimWorldLeague">Muslim World League</option>
+              <option value="Egyptian">Egyptian</option>
+              <option value="Karachi">Karachi</option>
+              <option value="UmmAlQura">Umm al-Qura (Makkah)</option>
+              <option value="Dubai">Dubai</option>
+              <option value="MoonsightingCommittee">Moonsighting Committee</option>
+              <option value="NorthAmerica">ISNA (North America)</option>
+              <option value="Kuwait">Kuwait</option>
+              <option value="Qatar">Qatar</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Tehran">Tehran</option>
+              <option value="Turkey">Turkey</option>
+            </select>
+          </label>
+          <label class="row">
+            <span>Madhab (Asr)</span>
+            <select id="prayer-madhab">
+              <option value="Shafi">Shafi / Maliki / Hanbali</option>
+              <option value="Hanafi">Hanafi</option>
+            </select>
+          </label>
+          <table id="prayer-table" aria-label="Today's prayer times">
+            <tbody></tbody>
+          </table>
+          <p class="meta">Calculated entirely on-device. No location data leaves this browser.</p>
+        </div>
+      </section>
+
+      <section>
+        <h3>About</h3>
+        <p class="meta">
+          Divine Prayer · v1.2.0 · Privacy-first new tab page.<br />
+          Prayer-time math by <a href="https://github.com/batoulapps/adhan-js" target="_blank" rel="noopener noreferrer">adhan-js</a> (MIT, vendored).
+        </p>
+      </section>
+    </aside>
 
     <script type="module" src="newtab.js"></script>
   </body>

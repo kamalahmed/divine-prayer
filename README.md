@@ -10,13 +10,25 @@ This Chrome extension cycles through a curated collection of duas/prayers/zikr f
 
 
 ## Features
-- Displays a dua/prayer/zikr from the Quran and Sahih Hadith with English translation, cycling sequentially across new tabs.
-- Navigate verses with prev/next buttons or the ←/→ arrow keys.
-- Shows the current time and date; toggle between 12h (AM/PM) and 24h format.
-- Random wallpaper button plus dropdown for picking from the predefined set.
-- Settings (verse position, wallpaper, time format) persist across sessions via `chrome.storage`.
-- Self-hosted fonts and a strict Content Security Policy — no external network requests.
-- Accessible: keyboard navigation, focus rings, semantic markup, `lang="ar"` for screen readers.
+- **Verses**: a dua/prayer/zikr from the Quran and Sahih Hadith with English translation, cycling sequentially across new tabs. Navigate with prev/next buttons or the ←/→ arrow keys.
+- **Favorites**: star verses you want to revisit (`F` key or the star button); filter to favorites-only from the settings panel.
+- **Copy verse**: copy the Arabic + English (and source, when present) to your clipboard with one click or the `C` key.
+- **Hijri date**: shown alongside the Gregorian date, computed locally via the browser's built-in Umm-al-Qura calendar.
+- **Prayer times** (opt-in): six daily prayer times calculated entirely on-device using the [adhan-js](https://github.com/batoulapps/adhan-js) library. Enter your latitude/longitude once in the settings panel — nothing leaves your browser. Pick from 12 calculation methods and Shafi/Hanafi madhab. The next prayer + countdown is shown next to the clock.
+- **Clock**: 12h (AM/PM) or 24h format, your choice. Updates once per minute and pauses when the tab is hidden.
+- **Wallpapers**: 19 bundled wallpapers; pick one or randomize.
+- **Settings panel**: a clean side panel (gear icon, top-right; or `,` key) keeps all controls out of the way. Auto-hides idle controls after a few seconds for an uncluttered view.
+- **Privacy-first**: zero network requests. Self-hosted fonts, vendored library, strict Content Security Policy. Settings persist locally via `chrome.storage`.
+- **Accessible**: keyboard navigation, focus rings, semantic markup, `lang="ar"` for screen readers.
+
+## Keyboard shortcuts
+| Key | Action |
+| --- | --- |
+| `←` / `→` | Previous / next verse |
+| `F` | Toggle favorite on current verse |
+| `C` | Copy current verse |
+| `,` | Open / close settings panel |
+| `Esc` | Close settings panel |
 
 ## Installation
 1. Clone the repository to your local machine:
@@ -43,6 +55,9 @@ This Chrome extension cycles through a curated collection of duas/prayers/zikr f
   /fonts
     scheherazade-arabic.woff2
     scheherazade-latin.woff2
+  /vendor
+    adhan.esm.min.js   # MIT, https://github.com/batoulapps/adhan-js
+    adhan-LICENSE
   /newtab.html
   /newtab.js
   /styles.css
@@ -70,6 +85,10 @@ This Chrome extension cycles through a curated collection of duas/prayers/zikr f
 ## Custom wallpapers
 - Replace any image in `wallpapers/` to use your own — file names must stay as `wallpaper1.jpg`, `wallpaper2.jpg`, etc.
 - To use more or fewer than the default 19 wallpapers, change the `WALLPAPER_COUNT` constant at the top of `newtab.js` and add/remove the matching `wallpaperN.jpg` files. The dropdown is generated from this constant, so it updates automatically.
+
+## Credits
+- Prayer-time calculations by [adhan-js](https://github.com/batoulapps/adhan-js) (MIT, vendored under `vendor/`).
+- Arabic typography: [Scheherazade](https://software.sil.org/scheherazade/) (OFL, self-hosted under `fonts/`).
 
 ## License
 This project is licensed under the MIT License

@@ -1,36 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Tab</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-controls-visible="true">
     <main>
       <figure id="content">
         <blockquote id="verse" lang="ar" dir="rtl" aria-live="polite">…</blockquote>
-        <p id="verse-en" aria-live="polite">Loading…</p>
+        <p id="verse-en" aria-live="polite" data-i18n="loading">Loading…</p>
         <figcaption id="verse-source" hidden></figcaption>
         <nav id="verse-nav" aria-label="Verse navigation">
-          <button id="prev-verse" type="button" aria-label="Previous verse" title="Previous verse (←)">‹</button>
+          <button id="prev-verse" type="button" class="icon-btn" data-i18n-aria-label="prevVerse" data-i18n-title="prevVerse" aria-label="Previous verse" title="Previous verse (←)">‹</button>
+          <button id="favorite-verse" type="button" class="icon-btn" aria-pressed="false" data-i18n-aria-label="favoriteVerse" data-i18n-title="favoriteVerse" aria-label="Favorite this verse" title="Favorite (F)">
+            <span class="fav-icon" aria-hidden="true">☆</span>
+          </button>
           <span id="verse-counter" aria-live="off"></span>
-          <button id="next-verse" type="button" aria-label="Next verse" title="Next verse (→)">›</button>
+          <button id="copy-verse" type="button" class="icon-btn" data-i18n-aria-label="copyVerse" data-i18n-title="copyVerse" aria-label="Copy verse to clipboard" title="Copy (C)">
+            <span aria-hidden="true">⧉</span>
+          </button>
+          <button id="next-verse" type="button" class="icon-btn" data-i18n-aria-label="nextVerse" data-i18n-title="nextVerse" aria-label="Next verse" title="Next verse (→)">›</button>
         </nav>
       </figure>
     </main>
 
-    <div id="controls">
-      <button id="time-format" type="button" aria-pressed="false" title="Toggle 12h / 24h time">24h</button>
-      <button id="change-wallpaper" type="button">Random Wallpaper</button>
-      <label class="visually-hidden" for="wallpaper-selector">Select wallpaper</label>
-      <select id="wallpaper-selector"></select>
-    </div>
-
     <div id="clock-container">
       <div id="clock" aria-live="off"></div>
       <div id="date" aria-live="off"></div>
+      <div id="hijri-date" aria-live="off" lang="ar"></div>
+      <div id="prayer-widget" hidden>
+        <span id="next-prayer-name"></span>
+        <span id="next-prayer-time"></span>
+        <span id="next-prayer-countdown"></span>
+      </div>
     </div>
+
+    <button id="open-settings" type="button" class="icon-btn settings-toggle" aria-haspopup="dialog" aria-expanded="false" data-i18n-aria-label="openSettings" data-i18n-title="openSettings" aria-label="Open settings" title="Settings (,)">
+      <span aria-hidden="true">⚙</span>
+    </button>
+
+    <aside id="settings-panel" role="dialog" aria-modal="false" aria-labelledby="settings-title" aria-hidden="true">
+      <header>
+        <h2 id="settings-title" data-i18n="settings">Settings</h2>
+        <button id="close-settings" type="button" class="icon-btn" data-i18n-aria-label="closeSettings" aria-label="Close settings">✕</button>
+      </header>
+
+      <section>
+        <h3 data-i18n="display">Display</h3>
+        <label class="row" for="locale-select">
+          <span data-i18n="language">Language</span>
+          <select id="locale-select">
+            <option value="en" data-i18n="languageEnglish">English</option>
+            <option value="ar" data-i18n="languageArabic">العربية</option>
+          </select>
+        </label>
+        <label class="row">
+          <span data-i18n="timeFormat">Time format</span>
+          <button id="time-format" type="button" aria-pressed="false">24h</button>
+        </label>
+        <label class="row" for="wallpaper-selector">
+          <span data-i18n="wallpaper">Wallpaper</span>
+          <select id="wallpaper-selector"></select>
+        </label>
+        <label class="row">
+          <span>&nbsp;</span>
+          <button id="change-wallpaper" type="button" data-i18n="randomWallpaper">Random Wallpaper</button>
+        </label>
+      </section>
+
+      <section>
+        <h3 data-i18n="versesSection">Verses</h3>
+        <label class="row">
+          <span data-i18n="showFavoritesOnly">Show favorites only</span>
+          <input id="favorites-only" type="checkbox" />
+        </label>
+        <p class="meta"><span id="favorites-count">0</span> <span data-i18n="favoritedSuffix">favorited</span></p>
+      </section>
+
+      <section>
+        <h3 data-i18n="prayerTimes">Prayer times</h3>
+        <label class="row">
+          <span data-i18n="enable">Enable</span>
+          <input id="prayer-enable" type="checkbox" />
+        </label>
+        <div id="prayer-config" hidden>
+          <label class="row">
+            <span data-i18n="latitude">Latitude</span>
+            <input id="prayer-lat" type="number" step="0.0001" min="-90" max="90" placeholder="21.4225" />
+          </label>
+          <label class="row">
+            <span data-i18n="longitude">Longitude</span>
+            <input id="prayer-lon" type="number" step="0.0001" min="-180" max="180" placeholder="39.8262" />
+          </label>
+          <label class="row">
+            <span data-i18n="method">Method</span>
+            <select id="prayer-method">
+              <option value="MuslimWorldLeague" data-i18n="methodMWL">Muslim World League</option>
+              <option value="Egyptian" data-i18n="methodEgyptian">Egyptian</option>
+              <option value="Karachi" data-i18n="methodKarachi">Karachi</option>
+              <option value="UmmAlQura" data-i18n="methodUmmAlQura">Umm al-Qura (Makkah)</option>
+              <option value="Dubai" data-i18n="methodDubai">Dubai</option>
+              <option value="MoonsightingCommittee" data-i18n="methodMoonsighting">Moonsighting Committee</option>
+              <option value="NorthAmerica" data-i18n="methodNorthAmerica">ISNA (North America)</option>
+              <option value="Kuwait" data-i18n="methodKuwait">Kuwait</option>
+              <option value="Qatar" data-i18n="methodQatar">Qatar</option>
+              <option value="Singapore" data-i18n="methodSingapore">Singapore</option>
+              <option value="Tehran" data-i18n="methodTehran">Tehran</option>
+              <option value="Turkey" data-i18n="methodTurkey">Turkey</option>
+            </select>
+          </label>
+          <label class="row">
+            <span data-i18n="madhab">Madhab (Asr)</span>
+            <select id="prayer-madhab">
+              <option value="Shafi" data-i18n="madhabShafi">Shafi / Maliki / Hanbali</option>
+              <option value="Hanafi" data-i18n="madhabHanafi">Hanafi</option>
+            </select>
+          </label>
+          <table id="prayer-table" aria-label="Today's prayer times">
+            <tbody></tbody>
+          </table>
+          <p class="meta" data-i18n="onDeviceNotice">Calculated entirely on-device. No location data leaves this browser.</p>
+        </div>
+      </section>
+
+      <section>
+        <h3 data-i18n="about">About</h3>
+        <p class="meta">
+          Divine Prayer · v1.3.0 · <span data-i18n="aboutTagline">Privacy-first new tab page. No network requests.</span><br />
+          <span data-i18n="aboutCredits">Prayer-time math by adhan-js (MIT, vendored).</span>
+          <a href="https://github.com/batoulapps/adhan-js" target="_blank" rel="noopener noreferrer">↗</a>
+        </p>
+      </section>
+    </aside>
 
     <script type="module" src="newtab.js"></script>
   </body>

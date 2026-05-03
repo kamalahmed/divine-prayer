@@ -25,9 +25,17 @@
   --accent: #6200ea;
   --accent-dark: #3700b3;
   --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.75);
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  --panel-bg: rgba(15, 15, 25, 0.92);
+  --panel-border: rgba(255, 255, 255, 0.12);
+  --slide-x: 100%;
   --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+[dir="rtl"] {
+  --slide-x: -100%;
 }
 
 html,
@@ -45,9 +53,9 @@ body {
   font-family: var(--system-font);
   color: var(--text);
   position: relative;
+  overflow: hidden;
 }
 
-/* Dark gradient overlay so white text remains legible on any wallpaper. */
 body::before {
   content: "";
   position: fixed;
@@ -58,23 +66,14 @@ body::before {
 }
 
 main,
-#controls,
-#clock-container {
+#clock-container,
+#settings-panel,
+.settings-toggle {
   position: relative;
   z-index: 1;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+/* ── Verse ──────────────────────────────────────────────────────────────── */
 
 #content {
   position: absolute;
@@ -101,6 +100,9 @@ main,
   font-weight: 200;
   line-height: 1.4;
   text-shadow: var(--shadow);
+  /* The translation is always English; lock its direction to LTR even in
+     RTL UI, otherwise punctuation drifts to the visual right. */
+  direction: ltr;
 }
 
 #verse-source {
@@ -109,66 +111,56 @@ main,
   font-style: italic;
   opacity: 0.85;
   text-shadow: var(--shadow);
+  direction: ltr;
 }
 
 #verse-nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   margin-top: 24px;
-}
-
-#verse-nav button {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--text);
-  font-size: 24px;
-  line-height: 1;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-#verse-nav button:hover {
-  background: rgba(255, 255, 255, 0.22);
 }
 
 #verse-counter {
   font-size: 0.9rem;
   opacity: 0.8;
-  min-width: 60px;
+  min-width: 70px;
   text-align: center;
   text-shadow: var(--shadow);
+  font-variant-numeric: tabular-nums;
 }
 
-#controls {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
+#favorite-verse[aria-pressed="true"] .fav-icon::before {
+  content: "★";
 }
+#favorite-verse[aria-pressed="false"] .fav-icon::before {
+  content: "☆";
+}
+#favorite-verse[aria-pressed="true"] {
+  color: #ffd54a;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
 
 button,
-select {
+select,
+input[type="number"] {
   font-family: inherit;
   font-size: 16px;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 12px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 16px;
   background-color: var(--accent);
   color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
@@ -180,34 +172,68 @@ button[aria-pressed="true"] {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-select {
-  background-color: white;
-  color: var(--accent);
+.icon-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 22px;
+  line-height: 1;
+  padding: 8px 14px;
+  box-shadow: none;
 }
 
-select:hover {
-  box-shadow: 0 0 0 2px var(--accent);
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+select,
+input[type="number"] {
+  cursor: pointer;
+  background-color: white;
+  color: var(--accent);
+  padding: 10px 12px;
+  min-height: 40px;
+}
+
+input[type="number"] {
+  cursor: text;
 }
 
 button:focus-visible,
-select:focus-visible {
+select:focus-visible,
+input:focus-visible,
+.icon-btn:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 2px;
   box-shadow: 0 0 0 5px var(--accent);
 }
 
+/* ── Settings toggle (gear) ─────────────────────────────────────────────── */
+
+.settings-toggle {
+  position: fixed;
+  top: 16px;
+  inset-inline-end: 16px;
+  font-size: 22px;
+  z-index: 5;
+}
+
+/* ── Clock & prayer widget ──────────────────────────────────────────────── */
+
 #clock-container {
   position: absolute;
   bottom: 20px;
-  left: 20px;
+  inset-inline-start: 20px;
   text-shadow: var(--shadow);
-  text-align: left;
+  text-align: start;
+  max-width: 90vw;
 }
 
 #clock {
   font-size: clamp(3rem, 10vh, 7rem);
   font-weight: 100;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 #date {
@@ -216,17 +242,190 @@ select:focus-visible {
   margin-top: 4px;
 }
 
+#hijri-date {
+  font-size: clamp(0.85rem, 2vh, 1.1rem);
+  font-weight: 300;
+  opacity: 0.85;
+  margin-top: 2px;
+}
+
+#prayer-widget {
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  font-size: clamp(0.9rem, 2vh, 1.1rem);
+}
+
+#next-prayer-name {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#next-prayer-countdown {
+  opacity: 0.85;
+}
+
+/* ── Settings panel ─────────────────────────────────────────────────────── */
+
+#settings-panel {
+  position: fixed;
+  top: 0;
+  inset-inline-end: 0;
+  bottom: 0;
+  width: min(380px, 92vw);
+  background: var(--panel-bg);
+  border-inline-start: 1px solid var(--panel-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 20px 22px;
+  overflow-y: auto;
+  z-index: 10;
+  transform: translateX(var(--slide-x));
+  visibility: hidden;
+  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+#settings-panel[aria-hidden="false"] {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.25s ease, visibility 0s linear 0s;
+}
+
+#settings-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+#settings-panel h2 {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+#settings-panel h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 18px 0 8px;
+  opacity: 0.7;
+}
+
+#settings-panel section {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 4px;
+}
+#settings-panel section:first-of-type {
+  border-top: none;
+}
+
+#settings-panel .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+#settings-panel .row > span:first-child {
+  flex: 1;
+  opacity: 0.9;
+}
+
+#settings-panel select,
+#settings-panel input[type="number"] {
+  flex: 0 0 auto;
+  max-width: 60%;
+}
+
+#settings-panel input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+#settings-panel .meta {
+  font-size: 0.8rem;
+  opacity: 0.65;
+  margin: 6px 0 0;
+  line-height: 1.4;
+}
+
+#settings-panel .meta a {
+  color: #ce93d8;
+  text-decoration: none;
+}
+
+#prayer-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+#prayer-table td {
+  padding: 4px 0;
+  border-top: 1px solid var(--panel-border);
+}
+#prayer-table tr:first-child td {
+  border-top: none;
+}
+#prayer-table td:first-child {
+  text-transform: capitalize;
+  opacity: 0.85;
+}
+#prayer-table td:last-child {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+#prayer-table tr.is-current td {
+  color: #ffd54a;
+}
+
+[dir="rtl"] #prayer-table td:first-child {
+  text-transform: none;
+}
+
+/* ── Auto-hide controls when idle ───────────────────────────────────────── */
+
+body[data-controls-visible="false"] .settings-toggle,
+body[data-controls-visible="false"] #verse-nav {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+body[data-controls-visible="true"] .settings-toggle,
+body[data-controls-visible="true"] #verse-nav {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
 @media (max-width: 600px) {
   #content {
     top: 40px;
   }
-  #controls {
-    bottom: 12px;
-    right: 12px;
-  }
   #clock-container {
     bottom: 12px;
-    left: 12px;
+    inset-inline-start: 12px;
+  }
+  .settings-toggle {
+    top: 10px;
+    inset-inline-end: 10px;
   }
 }
 

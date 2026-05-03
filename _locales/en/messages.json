@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Divine Prayer",
+    "description": "Name of the extension."
+  },
+  "appDescription": {
+    "message": "A privacy-first new-tab page that cycles through duas and zikr from the Quran and authentic Hadith. Includes Hijri date, on-device prayer times, favorites, and a settings panel — no network requests.",
+    "description": "Description of the extension shown in Chrome Web Store and chrome://extensions."
+  }
+}

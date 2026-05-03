@@ -4,44 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Tab</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Scheherazade" rel="stylesheet">
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div id="content">
-      <h1 id="verse">Loading...</h1>
-      <h2 id="verse-en">Loading...</h2>
-    </div>
+    <main>
+      <figure id="content">
+        <blockquote id="verse" lang="ar" dir="rtl" aria-live="polite">…</blockquote>
+        <p id="verse-en" aria-live="polite">Loading…</p>
+        <figcaption id="verse-source" hidden></figcaption>
+        <nav id="verse-nav" aria-label="Verse navigation">
+          <button id="prev-verse" type="button" aria-label="Previous verse" title="Previous verse (←)">‹</button>
+          <span id="verse-counter" aria-live="off"></span>
+          <button id="next-verse" type="button" aria-label="Next verse" title="Next verse (→)">›</button>
+        </nav>
+      </figure>
+    </main>
 
     <div id="controls">
-      <button id="change-wallpaper">Random Wallpaper</button>
-      <select id="wallpaper-selector">
-        <option value="wallpapers/wallpaper1.jpg">Wallpaper 1</option>
-        <option value="wallpapers/wallpaper2.jpg">Wallpaper 2</option>
-        <option value="wallpapers/wallpaper3.jpg">Wallpaper 3</option>
-        <option value="wallpapers/wallpaper4.jpg">Wallpaper 4</option>
-        <option value="wallpapers/wallpaper5.jpg">Wallpaper 5</option>
-        <option value="wallpapers/wallpaper6.jpg">Wallpaper 6</option>
-        <option value="wallpapers/wallpaper7.jpg">Wallpaper 7</option>
-        <option value="wallpapers/wallpaper8.jpg">Wallpaper 8</option>
-        <option value="wallpapers/wallpaper9.jpg">Wallpaper 9</option>
-        <option value="wallpapers/wallpaper10.jpg">Wallpaper 10</option>
-        <option value="wallpapers/wallpaper11.jpg">Wallpaper 11</option>
-        <option value="wallpapers/wallpaper12.jpg">Wallpaper 12</option>
-        <option value="wallpapers/wallpaper13.jpg">Wallpaper 13</option>
-        <option value="wallpapers/wallpaper14.jpg">Wallpaper 14</option>
-        <option value="wallpapers/wallpaper15.jpg">Wallpaper 15</option>
-        <option value="wallpapers/wallpaper16.jpg">Wallpaper 16</option>
-        <option value="wallpapers/wallpaper17.jpg">Wallpaper 17</option>
-        <option value="wallpapers/wallpaper18.jpg">Wallpaper 18</option>
-        <option value="wallpapers/wallpaper19.jpg">Wallpaper 19</option>
-      </select>
+      <button id="time-format" type="button" aria-pressed="false" title="Toggle 12h / 24h time">24h</button>
+      <button id="change-wallpaper" type="button">Random Wallpaper</button>
+      <label class="visually-hidden" for="wallpaper-selector">Select wallpaper</label>
+      <select id="wallpaper-selector"></select>
     </div>
+
     <div id="clock-container">
-        <div id="clock"></div>
-        <div id="date"></div>
-      </div>
+      <div id="clock" aria-live="off"></div>
+      <div id="date" aria-live="off"></div>
+    </div>
+
     <script type="module" src="newtab.js"></script>
-</body>
+  </body>
 </html>

@@ -1,44 +1,145 @@
+@font-face {
+  font-family: "Scheherazade";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/scheherazade-arabic.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: "Scheherazade";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/scheherazade-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2122, U+2212;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --accent: #6200ea;
+  --accent-dark: #3700b3;
+  --text: #ffffff;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+  --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+html,
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
+  min-height: 100vh;
+}
+
+body {
+  background-color: #111;
   background-size: cover;
   background-position: center;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-  Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+  background-repeat: no-repeat;
+  font-family: var(--system-font);
+  color: var(--text);
   position: relative;
+}
+
+/* Dark gradient overlay so white text remains legible on any wallpaper. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+  z-index: 0;
+}
+
+main,
+#controls,
+#clock-container {
+  position: relative;
+  z-index: 1;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 #content {
   position: absolute;
-  top: 100px;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
+  width: min(90vw, 900px);
+  margin: 0;
   text-align: center;
 }
 
 #verse {
-  color: white;
-  margin: auto 0 50px;
-  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
-  font-size: 7vh;
-  font-weight: 100;
-  /* text-shadow: gray 0px 0px 2px; */
-  font-family: Scheherazade, sans-serif;
+  margin: 0 0 32px;
+  font-family: "Scheherazade", "Tajawal", serif;
+  font-size: clamp(2.5rem, 7vh, 5rem);
+  font-weight: 400;
+  line-height: 1.6;
+  text-shadow: var(--shadow);
 }
-#verse-en {
-  color: white;
-  /* font-size: 2rem;
-    margin: 0; */
-  text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
 
-  font-size: 4vh;
+#verse-en {
+  margin: 0 0 12px;
+  font-size: clamp(1.1rem, 4vh, 2rem);
   font-weight: 200;
-  margin: auto;
-  /* text-shadow: gray 0px 0px 2px; */
-  height: 100px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+  line-height: 1.4;
+  text-shadow: var(--shadow);
+}
+
+#verse-source {
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  font-style: italic;
+  opacity: 0.85;
+  text-shadow: var(--shadow);
+}
+
+#verse-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+#verse-nav button {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  font-size: 24px;
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#verse-nav button:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+#verse-counter {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  min-width: 60px;
+  text-align: center;
+  text-shadow: var(--shadow);
 }
 
 #controls {
@@ -48,60 +149,92 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 10px;
 }
 
 button,
 select {
-  margin: 10px 0;
-  padding: 10px;
+  font-family: inherit;
   font-size: 16px;
-  cursor: pointer;
-  border-radius: 5px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 12px 16px;
   border: none;
-  outline: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 button {
-  background-color: #6200ea;
+  background-color: var(--accent);
   color: white;
-  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #3700b3;
+  background-color: var(--accent-dark);
+}
+
+button[aria-pressed="true"] {
+  background-color: var(--accent-dark);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 select {
   background-color: white;
-  color: #6200ea;
-  transition: box-shadow 0.3s ease;
+  color: var(--accent);
 }
 
 select:hover {
-  box-shadow: 0 0 0 2px #6200ea;
+  box-shadow: 0 0 0 2px var(--accent);
 }
 
-/* Clock style */
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--accent);
+}
 
 #clock-container {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  font-size: 24px;
+  text-shadow: var(--shadow);
   text-align: left;
 }
 
 #clock {
-    font-size: 10vh;
-    font-weight: 100;
-    text-shadow: gray 0px 0px 2px;
+  font-size: clamp(3rem, 10vh, 7rem);
+  font-weight: 100;
+  line-height: 1;
 }
 
 #date {
-    font-size: 3vh;
-    font-weight: 200;
-    text-shadow: gray 0px 0px 2px;
+  font-size: clamp(1rem, 3vh, 1.6rem);
+  font-weight: 300;
+  margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+  #content {
+    top: 40px;
+  }
+  #controls {
+    bottom: 12px;
+    right: 12px;
+  }
+  #clock-container {
+    bottom: 12px;
+    left: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }

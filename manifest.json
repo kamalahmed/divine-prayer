@@ -1,15 +1,18 @@
 {
-    "manifest_version": 3,
-    "name": "Divine Prayer",
-    "version": "1.0",
-    "description": "Read a beautiful prayer from the Quran and the Authentic Hadith of the Prophet Muhammad PBUH each time you open a new tab",
-    "chrome_url_overrides": {
-      "newtab": "newtab.html"
-    },
-    "icons": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+  "manifest_version": 3,
+  "name": "Divine Prayer",
+  "version": "1.1.0",
+  "description": "Read a beautiful prayer from the Quran and the Authentic Hadith of the Prophet Muhammad PBUH each time you open a new tab",
+  "permissions": ["storage"],
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'"
   }
-  
+}

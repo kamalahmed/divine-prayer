@@ -29,8 +29,13 @@
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
   --panel-bg: rgba(15, 15, 25, 0.92);
   --panel-border: rgba(255, 255, 255, 0.12);
+  --slide-x: 100%;
   --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+[dir="rtl"] {
+  --slide-x: -100%;
 }
 
 html,
@@ -95,6 +100,9 @@ main,
   font-weight: 200;
   line-height: 1.4;
   text-shadow: var(--shadow);
+  /* The translation is always English; lock its direction to LTR even in
+     RTL UI, otherwise punctuation drifts to the visual right. */
+  direction: ltr;
 }
 
 #verse-source {
@@ -103,6 +111,7 @@ main,
   font-style: italic;
   opacity: 0.85;
   text-shadow: var(--shadow);
+  direction: ltr;
 }
 
 #verse-nav {
@@ -119,6 +128,7 @@ main,
   min-width: 70px;
   text-align: center;
   text-shadow: var(--shadow);
+  font-variant-numeric: tabular-nums;
 }
 
 #favorite-verse[aria-pressed="true"] .fav-icon::before {
@@ -203,7 +213,7 @@ input:focus-visible,
 .settings-toggle {
   position: fixed;
   top: 16px;
-  right: 16px;
+  inset-inline-end: 16px;
   font-size: 22px;
   z-index: 5;
 }
@@ -213,9 +223,9 @@ input:focus-visible,
 #clock-container {
   position: absolute;
   bottom: 20px;
-  left: 20px;
+  inset-inline-start: 20px;
   text-shadow: var(--shadow);
-  text-align: left;
+  text-align: start;
   max-width: 90vw;
 }
 
@@ -223,6 +233,7 @@ input:focus-visible,
   font-size: clamp(3rem, 10vh, 7rem);
   font-weight: 100;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 #date {
@@ -266,17 +277,17 @@ input:focus-visible,
 #settings-panel {
   position: fixed;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   bottom: 0;
   width: min(380px, 92vw);
   background: var(--panel-bg);
-  border-left: 1px solid var(--panel-border);
+  border-inline-start: 1px solid var(--panel-border);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 20px 22px;
   overflow-y: auto;
   z-index: 10;
-  transform: translateX(100%);
+  transform: translateX(var(--slide-x));
   visibility: hidden;
   transition: transform 0.25s ease, visibility 0s linear 0.25s;
 }
@@ -353,7 +364,7 @@ input:focus-visible,
 
 #settings-panel .meta a {
   color: #ce93d8;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 #prayer-table {
@@ -375,12 +386,16 @@ input:focus-visible,
   opacity: 0.85;
 }
 #prayer-table td:last-child {
-  text-align: right;
+  text-align: end;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
 }
 #prayer-table tr.is-current td {
   color: #ffd54a;
+}
+
+[dir="rtl"] #prayer-table td:first-child {
+  text-transform: none;
 }
 
 /* ── Auto-hide controls when idle ───────────────────────────────────────── */
@@ -406,11 +421,11 @@ body[data-controls-visible="true"] #verse-nav {
   }
   #clock-container {
     bottom: 12px;
-    left: 12px;
+    inset-inline-start: 12px;
   }
   .settings-toggle {
     top: 10px;
-    right: 10px;
+    inset-inline-end: 10px;
   }
 }
 

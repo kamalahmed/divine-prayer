@@ -1,5 +1,6 @@
 import verses from "./verses.js";
 import * as adhan from "./vendor/adhan.esm.min.js";
+import { applyI18n, detectInitialLocale, t, SUPPORTED_LOCALES } from "./i18n.js";
 
 const WALLPAPER_COUNT = 19;
 const STORAGE_KEYS = {
@@ -9,6 +10,7 @@ const STORAGE_KEYS = {
   favorites: "favorites",
   favoritesOnly: "favoritesOnly",
   prayer: "prayer",
+  locale: "locale",
 };
 
 // ── Storage adapter (chrome.storage.local with localStorage fallback) ──────
@@ -89,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Settings
   const openSettingsBtn = $("open-settings"), closeSettingsBtn = $("close-settings");
   const settingsPanel = $("settings-panel");
+  const localeSelect = $("locale-select");
   const timeFormatBtn = $("time-format");
   const wallpaperSelect = $("wallpaper-selector"), changeWallpaperBtn = $("change-wallpaper");
   const favoritesOnlyEl = $("favorites-only"), favoritesCountEl = $("favorites-count");
@@ -101,15 +104,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const prayerMethod = $("prayer-method"), prayerMadhab = $("prayer-madhab");
   const prayerTableBody = document.querySelector("#prayer-table tbody");
 
+  // ── Locale ───────────────────────────────────────────────────────────────
+  let currentLocale = await storage.get(STORAGE_KEYS.locale, null);
+  if (!SUPPORTED_LOCALES.includes(currentLocale)) currentLocale = detectInitialLocale();
+  localeSelect.value = currentLocale;
+  applyI18n(currentLocale);
+
+  const intlLocale = () => (currentLocale === "ar" ? "ar" : undefined);
+
   // ── Wallpapers ───────────────────────────────────────────────────────────
-  const fragment = document.createDocumentFragment();
-  wallpapers.forEach((url, i) => {
-    const opt = document.createElement("option");
-    opt.value = url;
-    opt.textContent = `Wallpaper ${i + 1}`;
-    fragment.appendChild(opt);
-  });
-  wallpaperSelect.appendChild(fragment);
+  function rebuildWallpaperOptions() {
+    wallpaperSelect.innerHTML = "";
+    const fragment = document.createDocumentFragment();
+    wallpapers.forEach((url, i) => {
+      const opt = document.createElement("option");
+      opt.value = url;
+      opt.textContent = t(currentLocale, "wallpaperOption", i + 1);
+      fragment.appendChild(opt);
+    });
+    wallpaperSelect.appendChild(fragment);
+  }
+  rebuildWallpaperOptions();
 
   let currentWallpaper = null;
   function setWallpaper(url, { persist = true } = {}) {
@@ -148,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── Verses ───────────────────────────────────────────────────────────────
   if (!Array.isArray(verses) || verses.length === 0) {
     verseEl.textContent = "";
-    verseEnEl.textContent = "No verses available.";
+    verseEnEl.textContent = t(currentLocale, "noVerses");
     return;
   }
 
@@ -200,12 +215,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const text = `${v.ar}\n${v.en}${v.source ? `\n— ${v.source}` : ""}`;
     try {
       await navigator.clipboard.writeText(text);
-      const original = copyBtn.getAttribute("aria-label");
-      copyBtn.setAttribute("aria-label", "Copied!");
-      copyBtn.title = "Copied!";
+      const labelKey = "copyVerse";
+      copyBtn.setAttribute("aria-label", t(currentLocale, "copied"));
+      copyBtn.title = t(currentLocale, "copied");
       setTimeout(() => {
-        copyBtn.setAttribute("aria-label", original);
-        copyBtn.title = "Copy (C)";
+        copyBtn.setAttribute("aria-label", t(currentLocale, labelKey));
+        copyBtn.title = t(currentLocale, labelKey);
       }, 1200);
     } catch {
       // Clipboard API may be unavailable; ignore silently.
@@ -252,17 +267,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderClock() {
     const now = new Date();
-    const time = now.toLocaleTimeString(undefined, {
+    const time = now.toLocaleTimeString(intlLocale(), {
       hour: "numeric",
       minute: "2-digit",
       hour12: !use24h,
     });
     if (time !== lastTime) { clockEl.textContent = time; lastTime = time; }
-    const date = now.toLocaleDateString(undefined, {
+    const date = now.toLocaleDateString(intlLocale(), {
       weekday: "long", month: "long", day: "numeric",
     });
     if (date !== lastDate) { dateEl.textContent = date; lastDate = date; }
-    const hijri = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
+    const hijriLocale = currentLocale === "ar" ? "ar-SA-u-ca-islamic-umalqura" : "en-u-ca-islamic-umalqura";
+    const hijri = new Intl.DateTimeFormat(hijriLocale, {
       day: "numeric", month: "long", year: "numeric",
     }).format(now);
     if (hijri !== lastHijri) { hijriEl.textContent = hijri; lastHijri = hijri; }
@@ -286,9 +302,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // ── Prayer times ─────────────────────────────────────────────────────────
-  const PRAYER_LABELS = {
-    fajr: "Fajr", sunrise: "Sunrise", dhuhr: "Dhuhr",
-    asr: "Asr", maghrib: "Maghrib", isha: "Isha",
+  const PRAYER_KEYS = {
+    fajr: "fajr", sunrise: "sunrise", dhuhr: "dhuhr",
+    asr: "asr", maghrib: "maghrib", isha: "isha",
   };
 
   let prayerCfg = await storage.get(STORAGE_KEYS.prayer, {
@@ -320,7 +336,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function fmtTime(d) {
-    return d.toLocaleTimeString(undefined, {
+    return d.toLocaleTimeString(intlLocale(), {
       hour: "numeric", minute: "2-digit", hour12: !use24h,
     });
   }
@@ -341,36 +357,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     const pt = calcPrayerTimes(now);
     if (!pt) {
       prayerWidget.hidden = true;
-      prayerTableBody.innerHTML = `<tr><td colspan="2">Enter latitude and longitude to enable.</td></tr>`;
+      const msg = t(currentLocale, "enterLatLon");
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 2;
+      td.textContent = msg;
+      tr.appendChild(td);
+      prayerTableBody.replaceChildren(tr);
       return;
     }
     const order = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"];
     const current = pt.currentPrayer(now);
 
-    // Update widget with next prayer
     let nextKey = pt.nextPrayer(now);
     let nextDate = nextKey === "none" ? null : pt[nextKey];
     if (!nextDate) {
-      // After Isha — next is tomorrow's Fajr
       const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
       const ptTomorrow = calcPrayerTimes(tomorrow);
       if (ptTomorrow) { nextKey = "fajr"; nextDate = ptTomorrow.fajr; }
     }
     if (nextDate) {
       prayerWidget.hidden = false;
-      nextPrayerName.textContent = PRAYER_LABELS[nextKey] || nextKey;
+      nextPrayerName.textContent = t(currentLocale, PRAYER_KEYS[nextKey]);
       nextPrayerTime.textContent = fmtTime(nextDate);
-      nextPrayerCountdown.textContent = `· in ${fmtCountdown(nextDate.getTime())}`;
+      nextPrayerCountdown.textContent = `· ${t(currentLocale, "nextPrayerIn", fmtCountdown(nextDate.getTime()))}`;
     } else {
       prayerWidget.hidden = true;
     }
 
-    // Update settings panel table
-    const rows = order.map((key) => {
-      const isCurrent = key === current ? " class=\"is-current\"" : "";
-      return `<tr${isCurrent}><td>${PRAYER_LABELS[key]}</td><td>${fmtTime(pt[key])}</td></tr>`;
-    });
-    prayerTableBody.innerHTML = rows.join("");
+    prayerTableBody.replaceChildren(...order.map((key) => {
+      const tr = document.createElement("tr");
+      if (key === current) tr.className = "is-current";
+      const tdName = document.createElement("td");
+      tdName.textContent = t(currentLocale, PRAYER_KEYS[key]);
+      const tdTime = document.createElement("td");
+      tdTime.textContent = fmtTime(pt[key]);
+      tr.append(tdName, tdTime);
+      return tr;
+    }));
   }
 
   prayerEnable.addEventListener("change", () => {
@@ -379,14 +403,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     savePrayerCfg();
     renderPrayer();
   });
-  for (const [el, key, transform] of [
-    [prayerLat, "lat", (v) => v],
-    [prayerLon, "lon", (v) => v],
-    [prayerMethod, "method", (v) => v],
-    [prayerMadhab, "madhab", (v) => v],
+  for (const [el, key] of [
+    [prayerLat, "lat"], [prayerLon, "lon"],
+    [prayerMethod, "method"], [prayerMadhab, "madhab"],
   ]) {
     el.addEventListener("change", () => {
-      prayerCfg[key] = transform(el.value);
+      prayerCfg[key] = el.value;
       savePrayerCfg();
       renderPrayer();
     });
@@ -404,6 +426,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   openSettingsBtn.addEventListener("click", () => toggleSettings());
   closeSettingsBtn.addEventListener("click", () => toggleSettings(false));
 
+  // ── Language switching ──────────────────────────────────────────────────
+  localeSelect.addEventListener("change", () => {
+    if (!SUPPORTED_LOCALES.includes(localeSelect.value)) return;
+    currentLocale = localeSelect.value;
+    storage.set(STORAGE_KEYS.locale, currentLocale);
+    applyI18n(currentLocale);
+    rebuildWallpaperOptions();
+    wallpaperSelect.value = currentWallpaper;
+    // Force re-render of dynamic strings.
+    lastTime = ""; lastDate = ""; lastHijri = "";
+    renderClock();
+    renderPrayer();
+  });
+
   // ── Auto-hide controls when idle ─────────────────────────────────────────
   let idleTimer = null;
   function showControls() {
@@ -419,6 +455,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   showControls();
 
-  // Kick off
   scheduleClock();
 });
